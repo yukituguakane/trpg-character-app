@@ -118,20 +118,17 @@ function beginEdit(){
   state.editDraft=clone(characters[state.selectedCharacterId]);
   state.mode='edit';
   $('view').classList.remove('active');$('edit').classList.add('active');
-  renderCharacter();
-}
+  renderCharacter();}
 function cancelEdit(){
   state.editDraft=null;
   state.mode='view';
   $('edit').classList.remove('active');$('view').classList.add('active');
-  renderCharacter();
-}
+  renderCharacter();}
 function setMode(mode){if(mode==='edit'){beginEdit();}else{cancelEdit();}}
 function currentCharacter(){return state.mode==='edit'&&state.editDraft?state.editDraft:characters[state.selectedCharacterId];}
 function renderSelection(){
   $('characterCards').innerHTML=Object.values(characters).map(c=>`<article class="char-card ${c.id===state.selectedCharacterId?'selected':''}" data-char-id="${c.id}"><h3>${esc(c.name||'未登録のキャラクター')}</h3><div class="role">${esc(c.className||'クラス未設定')} / ${esc(c.gender||'性別未設定')}</div><div class="small">ID: ${esc(c.id)}</div><div class="memory-count">思い出の品：${memoryCountForCharacter(c.id)}個</div><div class="char-select-actions"><button type="button" class="btn choose-char" data-char-id="${c.id}">${c.id===state.selectedCharacterId?'選択中':'このキャラクターを選択'}</button></div></article>`).join('');
-  document.querySelectorAll('.choose-char').forEach(b=>b.addEventListener('click',()=>{state.selectedCharacterId=b.dataset.charId;state.editDraft=null;state.mode='view';setPage('char');renderSelection();}));
-}
+  document.querySelectorAll('.choose-char').forEach(b=>b.addEventListener('click',()=>{state.selectedCharacterId=b.dataset.charId;state.editDraft=null;state.mode='view';setPage('char');renderSelection();}));}
 function renderPersonal(){
   const c=currentCharacter();
   $('charName').textContent=c.name||'未登録のキャラクター';
@@ -143,12 +140,34 @@ function renderPersonal(){
   }else{
     $('pv').classList.add('hidden');$('pe').classList.remove('hidden');
     $('pe').innerHTML=`<div class="edit-grid"><label class="edit-field"><span class="label">名前</span><input data-personal="name" value="${esc(c.name)}"></label><label class="edit-field"><span class="label">クラス</span><input data-personal="className" value="${esc(c.className)}" ${c.className?'disabled':''}></label><label class="edit-field"><span class="label">年齢</span><input data-personal="age" value="${esc(c.age)}"></label><label class="edit-field"><span class="label">性別</span><input data-personal="gender" value="${esc(c.gender)}"></label><label class="edit-field"><span class="label">好きなもの</span><input data-personal="likes" value="${esc(c.likes)}"></label><label class="edit-field"><span class="label">嫌いなもの</span><input data-personal="dislikes" value="${esc(c.dislikes)}"></label><label class="edit-field full"><span class="label">ファッション特徴</span><input data-personal="fashion" value="${esc(c.fashion)}"></label></div><div class="savebar"><button type="button" class="btn" id="cancelPersonal">キャンセル</button><button type="button" class="btn save" id="savePersonal">保存</button></div>`;
-    $('savePersonal').addEventListener('click',()=>{document.querySelectorAll('[data-personal]').forEach(el=>{c[el.dataset.personal]=el.value;});characters[state.selectedCharacterId]=clone(c);state.editDraft=null;state.mode='view';$('edit').classList.remove('active');$('view').classList.add('active');renderSelection();renderCharacter();});
-    $('cancelPersonal').addEventListener('click',cancelEdit);
-  }
+ 
+$('savePersonal').addEventListener('click', async () => {
+  const saveButton = $('savePersonal');
+  const password = prompt('キャラクターのパスワードを入力してください。');
+  if (password === null || password.length === 0) {return;}
+  const updated = clone(c);
+  document.querySelectorAll('[data-personal]').forEach(el => {updated[el.dataset.personal] = el.value;});
+  saveButton.disabled = true;
+  saveButton.textContent = '保存中…';
+  try {const response = await fetch(`${API_BASE}/api/characters/${encodeURIComponent(updated.id)}`,
+      {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({password,sheet: updated})});
+    const result = await response.json();
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || '保存に失敗しました。');}
+    characters[state.selectedCharacterId] = updated;
+    state.editDraft = null;
+    state.mode = 'view';
+    $('edit').classList.remove('active');
+    $('view').classList.add('active');
+    renderSelection();
+    renderCharacter();
+    alert('保存しました！');} catch (error) {console.error('Character save failed:', error);
+    alert(error.message || '保存に失敗しました。入力内容を確認して再試行してください。');}finally {saveButton.disabled = false;saveButton.textContent = '保存';}});
+    $('cancelPersonal').addEventListener('click',cancelEdit); }
   renderPairLevels(c);
-  renderStrongFeelings(c);
-}
+  renderStrongFeelings(c);}
 function renderPairLevels(c){
   const host=$('pairLevelsSection');
   const others=Object.values(characters).filter(x=>x.id!==c.id);
