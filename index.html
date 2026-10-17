@@ -399,6 +399,62 @@ $('view').addEventListener('click',()=>setMode('view'));$('edit').addEventListen
 document.querySelectorAll('.navpage').forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.page)));
 $('gmDetective').addEventListener('change',e=>changeGMCharacter('d',e.target.value));
 $('gmAssistant').addEventListener('change',e=>changeGMCharacter('a',e.target.value));
-fillGMSelects();renderSelection();setRole('d');setMode('view');setPage('select');
+
+const API_BASE = 'https://trpg-character-app-api.yukituguakane.workers.dev';
+
+async function loadCharacters() {
+  try {
+    const response = await fetch(`${API_BASE}/api/characters`);
+    const data = await response.json();
+
+    if (!response.ok || !data.ok || !Array.isArray(data.characters)) {
+      throw new Error(data.error || 'キャラクターを読み込めませんでした。');
+    }
+
+    for (const record of data.characters) {
+      const current = characters[record.id];
+      if (!current) continue;
+
+      Object.assign(current, record);
+
+      // シートの入れ物は、既存の初期値を維持する
+      current.detective = {
+        ...current.detective,
+        ...(record.detective || {})
+      };
+      current.assistant = {
+        ...current.assistant,
+        ...(record.assistant || {})
+      };
+      current.commonSkills = {
+        ...current.commonSkills,
+        ...(record.commonSkills || {})
+      };
+      current.classSkillRules = {
+        ...current.classSkillRules,
+        ...(record.classSkillRules || {})
+      };
+
+      current.assistant.stress =
+        record.assistant?.stress ?? record.stress ?? 0;
+
+      if (!Array.isArray(current.strongFeelings)) {
+        current.strongFeelings = [];
+      }
+    }
+
+    fillGMSelects();
+    renderSelection();
+    setRole('d');
+    setMode('view');
+    setPage('select');
+  } catch (error) {
+    console.error('Character load failed:', error);
+    alert('キャラクターの読み込みに失敗しました。ページを再読み込みしてください。');
+  }
+}
+
+loadCharacters();
+
 </script>
 </body></html>
