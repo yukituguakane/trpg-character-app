@@ -13,7 +13,7 @@
 <body>
 <div class="app">
 <header class="top">
-  <div class="brand">TRPG Character Sheet</div>
+  <div class="brand">ヨニンコンバータCS</div>
   <div class="actions">
     <div class="mode"><button type="button" id="view" class="active">閲覧</button><button type="button" id="edit">編集</button></div>
     <button type="button" class="btn navpage active" data-page="select">PLキャラクター選択</button>
@@ -75,8 +75,7 @@ for(const [id,number] of [['Kyoshiro',1],['Alice',2],['Retasu',3],['Raika',4]]){
     classSkillRules:{fixed:[],categoryChoices:[],freeChoices:0},
     commonSkills:{class:[],growth:[]},
     detective:{actionSkills:[],actions:[blankAction(),blankAction()],habits:['','','','','','']},
-    assistant:{actionSkills:[],actions:[blankAction(),blankAction()],guestSkills:[],stress:0,guests:[]}
-  };
+    assistant:{actionSkills:[],actions:[blankAction(),blankAction()],guestSkills:[],stress:0,guests:[]}};
 }
 
 // Start with no sample memory items. Memories can be added by users later.
@@ -88,11 +87,9 @@ function clone(v){return JSON.parse(JSON.stringify(v));}
 function pairKey(a,b){return [a,b].sort().join(':');}
 function pairLevel(a,b){
   if(a===b)return 0;
-  return Math.min(MAX_PAIR_LEVEL, memories.filter(m=>m.owners.includes(a)&&m.owners.includes(b)).length);
-}
+  return Math.min(MAX_PAIR_LEVEL, memories.filter(m=>m.owners.includes(a)&&m.owners.includes(b)).length);}
 function maxPairLevelForCharacter(id){
-  return Math.max(0,...Object.keys(characters).filter(other=>other!==id).map(other=>pairLevel(id,other)));
-}
+  return Math.max(0,...Object.keys(characters).filter(other=>other!==id).map(other=>pairLevel(id,other)));}
 function memoryCountForCharacter(id){return memories.filter(m=>m.owners.includes(id)).length;}
 function slotUnlocked(index,level){return level>=UNLOCK_LEVELS[index];}
 function maxUnlockedActions(level){return Math.min(UNLOCK_LEVELS.length, UNLOCK_LEVELS.filter(x=>x<=Math.min(MAX_PAIR_LEVEL,level)).length);}
@@ -112,8 +109,7 @@ function setRole(role){
   $('av').classList.toggle('hidden',role!=='a');
   $('dt').classList.toggle('active',role==='d');
   $('at').classList.toggle('active',role==='a');
-  renderRole();
-}
+  renderRole();}
 function beginEdit(){
   state.editDraft=clone(characters[state.selectedCharacterId]);
   state.mode='edit';
@@ -206,14 +202,12 @@ function actionHTML(list,level){
   return Array.from({length:5},(_,i)=>{
     const a=list[i];
     if(slotUnlocked(i,level)) { if(a && a.name) return `<div class="action"><div class="ahead"><span class="aname">${i+1}. ${esc(a.name)}</span><span class="badge">使用可能</span></div>${a.type||a.cost?`<div class="action-meta">${esc(a.type||'—')} ${a.cost?`/ コスト ${esc(a.cost)}`:''}</div>`:''}<div class="effect">${esc(a.effect||'—')}</div><div class="action-meta">${esc(a.ref||'')}</div></div>`; return `<div class="action"><div class="ahead"><span class="aname">${i+1}. 未設定</span><span class="badge">使用可能</span></div><div class="effect">この枠は開放されています。</div></div>`; } return `<div class="action locked"><div class="ahead"><span class="aname">${i+1}. 未開放</span><span class="badge">Lv${UNLOCK_LEVELS[i]}で開放</span></div><div class="effect">現在は使用できません。</div></div>`;
-  }).join('');
-}
+  }).join('');}
 function actionEditor(list,level){
   return Array.from({length:5},(_,i)=>{
     const unlocked=slotUnlocked(i,level),a=list[i]||{name:'',type:'',cost:'',effect:'',ref:''};
     return `<div class="action-slot ${unlocked?'':'locked'}"><div class="slot-head"><b>${i+1}. ${unlocked?'アクション枠':'未開放'}</b><span class="badge">${unlocked?'使用可能':`Lv${UNLOCK_LEVELS[i]}で開放`}</span></div><div class="action-edit-row"><input data-action-index="${i}" data-action-key="name" placeholder="アクション名" value="${esc(a.name)}" ${unlocked?'':'disabled'}><input data-action-index="${i}" data-action-key="type" placeholder="タイプ" value="${esc(a.type)}" ${unlocked?'':'disabled'}><input data-action-index="${i}" data-action-key="cost" placeholder="コスト" value="${esc(a.cost)}" ${unlocked?'':'disabled'}></div><div class="edit-grid"><label class="edit-field"><span class="label">効果</span><textarea data-action-index="${i}" data-action-key="effect" ${unlocked?'':'disabled'}>${esc(a.effect)}</textarea></label><label class="edit-field"><span class="label">参照</span><input data-action-index="${i}" data-action-key="ref" value="${esc(a.ref)}" ${unlocked?'':'disabled'}></label></div></div>`;
-  }).join('');
-}
+  }).join('');}
 function skillEditor(c){
   const groups=[['class','クラス',c.commonSkills.class,true],['action','アクション',state.role==='d'?c.detective.actionSkills:c.assistant.actionSkills,false],['growth','成長',c.commonSkills.growth,true]];
   return `<div class="skill-editor">${groups.map(([cat,label,list,shared])=>`<div><div class="label" style="margin-bottom:5px">${label}${shared?'（共通）':''}</div>${cat==='growth'?renderGrowthEditor(list):cat==='action'?renderActionSkillEditor(list):renderPlainSkillEditor(cat,list)}${cat==='growth'?'':`<button type="button" class="btn add-skill" data-skill-cat="${cat}">＋技能を追加</button>`}</div>`).join('')}</div>`;
@@ -321,8 +315,7 @@ function renderCharacter(){renderPersonal();renderRole();renderFreeMemo();}
 function autoGrowMemo(el){
   if(!el)return;
   el.style.height='auto';
-  el.style.height=Math.max(el.scrollHeight,140)+'px';
-}
+  el.style.height=Math.max(el.scrollHeight,140)+'px';}
 function renderFreeMemo(){
   const c=currentCharacter();
   const host=$('freeMemoSection');
@@ -339,9 +332,7 @@ function renderFreeMemo(){
       state.editDraft.freeMemo=input.value;
       characters[state.selectedCharacterId]=clone(state.editDraft);
       state.editDraft=null;state.mode='view';$('edit').classList.remove('active');$('view').classList.add('active');
-      renderSelection();renderCharacter();
-    });
-  }
+      renderSelection();renderCharacter();});}
 }
 function renderMemories(){
   $('memoryGrid').innerHTML=memories.length?memories.map(m=>{
@@ -350,8 +341,7 @@ function renderMemories(){
   }).join(''):`<article class="memory"><h3>思い出の品はまだありません</h3><div class="small">「＋思い出の品を追加」から登録できます。</div></article>`;
   document.querySelectorAll('.edit-memory').forEach(b=>b.addEventListener('click',()=>openMemoryForm(b.dataset.memoryId)));
   document.querySelectorAll('.remove-memory').forEach(b=>b.addEventListener('click',()=>{const i=memories.findIndex(m=>m.id===b.dataset.memoryId);if(i>=0){memories.splice(i,1);renderMemories();renderSelection();renderCharacter();}}));
-  $('addMemory').onclick=()=>openMemoryForm(null);
-}
+  $('addMemory').onclick=()=>openMemoryForm(null);}
 function openMemoryForm(id){
   const m=id?memories.find(x=>x.id===id):{id:null,owners:[state.selectedCharacterId],title:'',memo:''};
   const checks=Object.values(characters).map(c=>`<label class="memory-owner-item"><input type="checkbox" class="memory-owner-check" value="${c.id}" ${m.owners.includes(c.id)?'checked':''}><span class="memory-owner-name">${esc(c.name)}</span></label>`).join('');
@@ -364,10 +354,8 @@ function openMemoryForm(id){
     if(!owners.length){alert('取得者を1人以上選んでください。');return;}
     if(!next.title){$('memoryTitle').focus();return;}
     if(id){const i=memories.findIndex(x=>x.id===id);if(i>=0)memories[i]=next;}else memories.push(next);
-    $('memoryForm').classList.add('hidden');$('memoryForm').innerHTML='';renderMemories();renderSelection();renderCharacter();
-  };
+    $('memoryForm').classList.add('hidden');$('memoryForm').innerHTML='';renderMemories();renderSelection();renderCharacter();};
 }
-
 function updateGM(){
   if(state.gmDetective===state.gmAssistant){state.gmAssistant=Object.keys(characters).find(id=>id!==state.gmDetective)||'Alice';fillGMSelects();}
   const d=characters[state.gmDetective],a=characters[state.gmAssistant];
@@ -397,12 +385,10 @@ function changeGMCharacter(role,id){
   const other=role==='d'?state.gmAssistant:state.gmDetective;
   if(id===other){
     fillGMSelects();
-    return;
-  }
+    return;}
   if(role==='d')state.gmDetective=id;else state.gmAssistant=id;
   updateGM();
-  fillGMSelects();
-}
+  fillGMSelects();}
 
 $('dt').addEventListener('click',()=>setRole('d'));$('at').addEventListener('click',()=>setRole('a'));
 $('view').addEventListener('click',()=>setMode('view'));$('edit').addEventListener('click',()=>setMode('edit'));
@@ -424,8 +410,7 @@ async function loadCharacters() {
       // シートの入れ物は、既存の初期値を維持する
       current.detective = {
         ...current.detective,
-        ...(record.detective || {})
-      };
+        ...(record.detective || {})};
       current.assistant = {...current.assistant,
         ...(record.assistant || {})};
       current.commonSkills = {
