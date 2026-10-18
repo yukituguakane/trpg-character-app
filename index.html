@@ -244,11 +244,8 @@ function renderRole(){
   }else{
     if(state.role==='d'){
       $('dv').innerHTML=`<div class="card"><div class="section-title"><h2>探偵を編集</h2></div><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>異常な癖</h3><div class="edit-grid">${r.habits.map((h,i)=>`<label class="edit-field"><span class="label">${i+1}</span><input data-habit-index="${i}" value="${esc(h)}"></label>`).join('')}</div><div class="savebar"><button type="button" class="btn" id="cancelRole">キャンセル</button><button type="button" class="btn save" id="saveRole">保存</button></div></div>`;
-    }else{
-      $('av').innerHTML=`<div class="card"><div class="section-title"><h2>助手を編集</h2></div><label class="edit-field"><span class="label">心労</span><input type="number" min="0" data-stress value="${esc(r.stress)}"></label><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>ゲスト</h3><div class="skill-editor">${r.guests.map((g,i)=>`<div class="guest-row"><input data-guest-index="${i}" data-guest-key="name" value="${esc(g.name)}"><input data-guest-index="${i}" data-guest-key="skill" value="${esc(g.skill)}"><button type="button" class="btn remove-guest" data-guest-index="${i}">削除</button></div>`).join('')}<button type="button" class="btn add-guest">＋ゲストを追加</button></div><div class="savebar"><button type="button" class="btn" id="cancelRole">キャンセル</button><button type="button" class="btn save" id="saveRole">保存</button></div></div>`;
-    }
-    attachEditHandlers();
-  }
+    }else{$('av').innerHTML=`<div class="card"><div class="section-title"><h2>助手を編集</h2></div><label class="edit-field"><span class="label">心労</span><input type="number" min="0" data-stress value="${esc(r.stress)}"></label><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>ゲスト</h3><div class="skill-editor">${r.guests.map((g,i)=>`<div class="guest-row"><input data-guest-index="${i}" data-guest-key="name" value="${esc(g.name)}"><input data-guest-index="${i}" data-guest-key="skill" value="${esc(g.skill)}"><button type="button" class="btn remove-guest" data-guest-index="${i}">削除</button></div>`).join('')}<button type="button" class="btn add-guest">＋ゲストを追加</button></div><div class="savebar"><button type="button" class="btn" id="cancelRole">キャンセル</button><button type="button" class="btn save" id="saveRole">保存</button></div></div>`;}
+    attachEditHandlers();}
 }
 function syncDraftFromDOM(root){
   const c=state.editDraft;
@@ -258,17 +255,14 @@ function syncDraftFromDOM(root){
     if(list[i]!==undefined){
       if(cat==='growth'){list[i]={name:el.value,level:3};}
       else if(cat==='action'){const row=el.closest('.skill-row');const lv=row.querySelector('select[data-skill-cat="action"]');list[i]={name:el.value,level:Number(lv?.value)||0};}
-      else list[i]=el.value;
-    }
-  });
+      else list[i]=el.value;}});
   const r=state.role==='d'?c.detective:c.assistant;
   root.querySelectorAll('[data-action-index]').forEach(el=>{const i=Number(el.dataset.actionIndex),key=el.dataset.actionKey;if(!r.actions[i])r.actions[i]={name:'',type:'',cost:'',effect:'',ref:''};r.actions[i][key]=el.value;});
   if(state.role==='d') root.querySelectorAll('[data-habit-index]').forEach(el=>r.habits[Number(el.dataset.habitIndex)]=el.value);
   else {
     const stress=root.querySelector('[data-stress]'); if(stress)r.stress=Number(stress.value)||0;
     root.querySelectorAll('[data-guest-index]').forEach(el=>{r.guests[Number(el.dataset.guestIndex)][el.dataset.guestKey]=el.value;});
-    r.guestSkills=r.guests.map(g=>g.skill);
-  }
+    r.guestSkills=r.guests.map(g=>g.skill);}
 }
 function attachEditHandlers(){
   const root=state.role==='d'?$('dv'):$('av');
@@ -303,24 +297,21 @@ function attachEditHandlers(){
     const duplicate=skillEntries.find((entry,i)=>entry.name && skillEntries.some((other,j)=>j!==i && other.name===entry.name));
     if(duplicate){
       alert(`「${duplicate.name}」がすでに取得している技能と重複しています。別の技能を選択してください。`);
-      return;
-    }
+      return;}
     root.querySelectorAll('.skill-row input[data-skill-cat][data-skill-index]').forEach(el=>{
       const cat=el.dataset.skillCat,i=Number(el.dataset.skillIndex);
       const list=cat==='class'?c.commonSkills.class:cat==='growth'?c.commonSkills.growth:cat==='action'?(state.role==='d'?c.detective.actionSkills:c.assistant.actionSkills):null;
       if(list[i]!==undefined){
         if(cat==='growth')list[i]={name:el.value,level:3};
         else if(cat==='action'){const row=el.closest('.skill-row');const lv=row.querySelector('select[data-skill-cat="action"]');list[i]={name:el.value,level:Number(lv?.value)||0};}
-        else list[i]=el.value;
-      }
+        else list[i]=el.value;}
     });
     if(state.role==='d'){
       root.querySelectorAll('[data-habit-index]').forEach(el=>r.habits[Number(el.dataset.habitIndex)]=el.value);
     }else{
       r.stress=Number(document.querySelector('[data-stress]').value)||0;
       root.querySelectorAll('[data-guest-index]').forEach(el=>{r.guests[Number(el.dataset.guestIndex)][el.dataset.guestKey]=el.value;});
-      r.guestSkills=r.guests.map(g=>g.skill);
-    }
+      r.guestSkills=r.guests.map(g=>g.skill);}
     root.querySelectorAll('[data-action-index]').forEach(el=>{const i=Number(el.dataset.actionIndex),key=el.dataset.actionKey;if(!r.actions[i])r.actions[i]={name:'',type:'',cost:'',effect:'',ref:''};r.actions[i][key]=el.value;});
     characters[state.selectedCharacterId]=clone(c);
     state.editDraft=null;state.mode='view';$('edit').classList.remove('active');$('view').classList.add('active');renderSelection();renderCharacter();
