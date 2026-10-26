@@ -74,7 +74,7 @@ const state={selectedCharacterId:'Kyoshiro',role:'d',mode:'view',page:'select',g
 // Empty character templates. Character IDs are fixed to the production identifiers until the app is connected to persistent storage.
 const blankAction=()=>({name:'',type:'',cost:'',effect:'',ref:''});
 const characters={};
-for(const [id,number] of [['Kyoshiro',1],['Alice',2],['Retasu',3],['Raika',4]]){
+for(const [id,number] of [['01',1],['02',2],['03',3],['04',4]]){
   characters[id]={
     id, name:'', className:'', age:'', gender:'', likes:'', dislikes:'', fashion:'',
     strongFeelings:[],
