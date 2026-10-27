@@ -443,8 +443,8 @@ $('gmAssistant').addEventListener('change',e=>changeGMCharacter('a',e.target.val
 // 旧GM一括コピーUIのイベントは削除。現在のキャラクター別コピー／TXT機能は上部で登録済み。
 
 // D1接続・保存確認版：GETで読み込み、ユーザーが保存を確定した場合のみPOSTでD1へ書き込みます。
-const API_BASE = 'https://trpg-character-app-api.yukituguakane.workers.dev';
-const CHARACTER_IDS = ['Kyoshiro','Alice','Retasu','Raika'];
+const API_BASE = 'https://trpgtest.yukituguakane.workers.dev';
+const CHARACTER_IDS = ['01','02','03','04'];
 function normalizeCharacter(record) {
   // Workerがsheet_jsonを返す実装・シート項目を直に返す実装の両方を扱う。
   let sheet = record;
