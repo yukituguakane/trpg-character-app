@@ -143,7 +143,7 @@ function renderPersonal(){
   <button type="button" class="btn" id="cancelPersonal">キャンセル</button>
   <button type="button" class="btn save" id="savePersonal">保存</button>
 </div>`;
-    $('cancelPersonal').addEventListener('click',cancelEdit); }
+   $('cancelPersonal').addEventListener('click',cancelEdit);
 $('savePersonal').addEventListener('click', async () => {
   const saveButton = $('savePersonal');
   const password = prompt('キャラクターのパスワードを入力してください。');
@@ -174,7 +174,7 @@ if (password.trim().length === 0) {
     renderCharacter();
     alert('保存しました！');} catch (error) {console.error('Character save failed:', error);
     alert(error.message || '保存に失敗しました。入力内容を確認して再試行してください。');}finally {saveButton.disabled = false;saveButton.textContent = '保存';}});
-    $('cancelPersonal').addEventListener('click',cancelEdit); }
+     }
   renderPairLevels(c);
   renderStrongFeelings(c);}
 function renderPairLevels(c){
