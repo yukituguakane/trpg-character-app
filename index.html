@@ -139,7 +139,10 @@ function renderPersonal(){
   <span class="label">クラス</span>
   <input data-personal="className"
          value="${esc(c.className)}">
-</label><label class="edit-field"><span class="label">年齢</span><input data-personal="age" value="${esc(c.age)}"></label><label class="edit-field"><span class="label">性別</span><input data-personal="gender" value="${esc(c.gender)}"></label><label class="edit-field"><span class="label">好きなもの</span><input data-personal="likes" value="${esc(c.likes)}"></label><label class="edit-field"><span class="label">嫌いなもの</span><input data-personal="dislikes" value="${esc(c.dislikes)}"></label><label class="edit-field full"><span class="label">ファッション特徴</span><input data-personal="fashion" value="${esc(c.fashion)}"></label></div><div class="savebar"><button type="button" class="btn" id="cancelPersonal">キャンセル</button></div>`;
+</label><label class="edit-field"><span class="label">年齢</span><input data-personal="age" value="${esc(c.age)}"></label><label class="edit-field"><span class="label">性別</span><input data-personal="gender" value="${esc(c.gender)}"></label><label class="edit-field"><span class="label">好きなもの</span><input data-personal="likes" value="${esc(c.likes)}"></label><label class="edit-field"><span class="label">嫌いなもの</span><input data-personal="dislikes" value="${esc(c.dislikes)}"></label><label class="edit-field full"><span class="label">ファッション特徴</span><input data-personal="fashion" value="${esc(c.fashion)}"></label></div><div class="savebar">
+  <button type="button" class="btn" id="cancelPersonal">キャンセル</button>
+  <button type="button" class="btn save" id="savePersonal">保存</button>
+</div>`;
     $('cancelPersonal').addEventListener('click',cancelEdit); }
 $('savePersonal').addEventListener('click', async () => {
   const saveButton = $('savePersonal');
