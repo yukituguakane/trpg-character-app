@@ -158,8 +158,9 @@ function renderPersonal(){
   <input data-personal="className"
          value="${esc(c.className)}">
 </label><label class="edit-field"><span class="label">年齢</span><input data-personal="age" value="${esc(c.age)}"></label><label class="edit-field"><span class="label">性別</span><input data-personal="gender" value="${esc(c.gender)}"></label><label class="edit-field"><span class="label">好きなもの</span><input data-personal="likes" value="${esc(c.likes)}"></label><label class="edit-field"><span class="label">嫌いなもの</span><input data-personal="dislikes" value="${esc(c.dislikes)}"></label><label class="edit-field full"><span class="label">ファッション特徴</span><input data-personal="fashion" value="${esc(c.fashion)}"></label></div>`;
+    }
   renderPairLevels(c);
-  renderStrongFeelings(c);}}
+  renderStrongFeelings(c);}
 function renderPairLevels(c){
   const host=$('pairLevelsSection');
   const others=Object.values(characters).filter(x=>x.id!==c.id);
@@ -347,7 +348,7 @@ function renderFreeMemo(){
     host.innerHTML=`<section class="card" style="background:var(--soft)"><div class="section-title"><h3 style="margin:0">メモ</h3><span class="small">自由に書き込めるメモ欄</span></div><label class="edit-field" style="margin-top:10px"><textarea id="freeMemoInput" class="free-memo-textarea" placeholder="自由にメモを書いてください。">${esc(memo)}</textarea></label></section>`;
     const input=$('freeMemoInput');
     autoGrowMemo(input);
-    input.addEventListener('input',()=>autoGrowMemo(input));}
+    input.addEventListener('input',()=>autoGrowMemo(input));}}
 // 基本情報を編集データに反映
 function syncPersonalFromDOM(){
   if(!state.editDraft)return;
@@ -366,7 +367,6 @@ function syncAllDraftFromDOM(){
   syncFreeMemoFromDOM();
   const root=state.role==='d'?$('dv'):$('av');
   syncDraftFromDOM(root);}
-  
 function renderMemories(){
   $('memoryGrid').innerHTML=memories.length?memories.map(m=>{
     const names=m.owners.map(id=>characters[id]?.name||id).join('・');
