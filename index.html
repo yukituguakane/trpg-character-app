@@ -158,24 +158,71 @@ function renderPersonal(){
   <input data-personal="className"
          value="${esc(c.className)}">
 </label><label class="edit-field"><span class="label">年齢</span><input data-personal="age" value="${esc(c.age)}"></label><label class="edit-field"><span class="label">性別</span><input data-personal="gender" value="${esc(c.gender)}"></label><label class="edit-field"><span class="label">好きなもの</span><input data-personal="likes" value="${esc(c.likes)}"></label><label class="edit-field"><span class="label">嫌いなもの</span><input data-personal="dislikes" value="${esc(c.dislikes)}"></label><label class="edit-field full"><span class="label">ファッション特徴</span><input data-personal="fashion" value="${esc(c.fashion)}"></label></div>`;
-
   renderPairLevels(c);
-  renderStrongFeelings(c);}
+  renderStrongFeelings(c);}}
 function renderPairLevels(c){
   const host=$('pairLevelsSection');
   const others=Object.values(characters).filter(x=>x.id!==c.id);
-  host.innerHTML=`<div class="card" style="margin-top:16px"><div class="section-title"><h3 style="margin:0">ペアレベル</h3><span class="small">思い出の品から自動計算</span></div><div class="personal" style="margin-top:10px">${others.map(o=>{const level=pairLevel(c.id,o.id);return `<div class="field"><div class="label">誰と</div><div class="value">${esc(o.name)}</div><div class="small" style="margin-top:4px">Lv${level}</div></div>`}).join('')}</div><div class="small" style="margin-top:10px">このレベルは、2人のどちらも取得者になっている思い出の品の数です。全員が取得した品も、その全員のペアに加算されます。</div></div>`;
-}
+  host.innerHTML=`<div class="card" style="margin-top:16px"><div class="section-title"><h3 style="margin:0">ペアレベル</h3><span class="small">思い出の品から自動計算</span></div><div class="personal" style="margin-top:10px">${others.map(o=>{const level=pairLevel(c.id,o.id);return `<div class="field"><div class="label">誰と</div><div class="value">${esc(o.name)}</div><div class="small" style="margin-top:4px">Lv${level}</div></div>`}).join('')}</div><div class="small" style="margin-top:10px">このレベルは、2人のどちらも取得者になっている思い出の品の数です。全員が取得した品も、その全員のペアに加算されます。</div></div>`;}
 function renderStrongFeelings(c){
   const host=$('feelingsSection');
   if(state.mode==='view'){
-    host.innerHTML=`<div style="margin-top:16px"><div class="section-title"><h3 style="margin:0">強い感情</h3><span class="small">ロール共通</span></div><div class="emotion-list" style="margin-top:8px">${c.strongFeelings.length?[...c.strongFeelings].sort((a,b)=>(characters[a.who]?.name||a.who).localeCompare(characters[b.who]?.name||b.who,'ja')).map(f=>`<div class="emotion-card"><div class="emotion-meta">${esc(characters[f.who]?.name||f.who)} ／ ${f.kind==='like'?'気に入っているところ':'気に入らないところ'}</div><b>${esc(f.emotion)}</b></div>`).join(''):'<div class="small">まだ登録されていません。</div>'}</div></div>`;
+    host.innerHTML=`<div style="margin-top:16px">
+      <div class="section-title">
+        <h3 style="margin:0">強い感情</h3>
+        <span class="small">ロール共通</span>
+      </div>
+      <div class="emotion-list" style="margin-top:8px">
+        ${c.strongFeelings.length
+          ? [...c.strongFeelings]
+            .sort((a,b)=>(characters[a.who]?.name||a.who).localeCompare(characters[b.who]?.name||b.who,'ja'))
+            .map(f=>`<div class="emotion-card">
+              <div class="emotion-meta">${esc(characters[f.who]?.name||f.who)} ／ ${f.kind==='like'?'気に入っているところ':'気に入らないところ'}</div>
+              <b>${esc(f.emotion)}</b></div>`).join('')
+          : '<div class="small">まだ登録されていません。</div>'}</div></div>`;
   }else{
-    host.innerHTML=`<div class="card" style="margin-top:16px;background:var(--soft)"><div class="section-title"><h3 style="margin:0">強い感情（ロール共通）</h3><button type="button" class="btn add-feeling">＋追加</button></div><div class="emotion-list" style="margin-top:10px">${c.strongFeelings.map((f,i)=>({f,i})).sort((a,b)=>(characters[a.f.who]?.name||a.f.who).localeCompare(characters[b.f.who]?.name||b.f.who,'ja')).map(({f,i})=>`<div class="emotion-card"><div class="edit-grid"><label class="edit-field"><span class="label">誰と</span><select data-feeling-index="${i}" data-feeling-key="who">${Object.values(characters).filter(x=>x.id!==state.selectedCharacterId).sort((a,b)=>a.name.localeCompare(b.name,'ja')).map(x=>`<option value="${x.id}" ${x.id===f.who?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label><label class="edit-field"><span class="label">気に入っている／気に入らない</span><select data-feeling-index="${i}" data-feeling-key="kind"><option value="like" ${f.kind==='like'?'selected':''}>気に入っているところ</option><option value="dislike" ${f.kind==='dislike'?'selected':''}>気に入らないところ</option></select></label><label class="edit-field full"><span class="label">感情の名前</span><input data-feeling-index="${i}" data-feeling-key="emotion" value="${esc(f.emotion)}"></label></div>
-    host.querySelectorAll('.add-feeling').forEach(b=>b.addEventListener('click',()=>{syncFeelingsFromDOM();state.editDraft.strongFeelings.push({who:Object.keys(characters).find(id=>id!==state.selectedCharacterId)||'Kyoshiro',kind:'like',emotion:''});renderStrongFeelings(state.editDraft);}));
-    host.querySelectorAll('.remove-feeling').forEach(b=>b.addEventListener('click',()=>{syncFeelingsFromDOM();state.editDraft.strongFeelings.splice(Number(b.dataset.feelingIndex),1);renderStrongFeelings(state.editDraft);}));
-  }
-}
+    host.innerHTML=`<div class="card" style="margin-top:16px;background:var(--soft)">
+      <div class="section-title">
+        <h3 style="margin:0">強い感情（ロール共通）</h3>
+        <button type="button" class="btn add-feeling">＋追加</button></div>
+      <div class="emotion-list" style="margin-top:10px">
+        ${c.strongFeelings.map((f,i)=>({f,i}))
+          .sort((a,b)=>(characters[a.f.who]?.name||a.f.who).localeCompare(characters[b.f.who]?.name||b.f.who,'ja'))
+          .map(({f,i})=>`<div class="emotion-card">
+            <div class="edit-grid">
+              <label class="edit-field">
+                <span class="label">誰と</span>
+                <select data-feeling-index="${i}" data-feeling-key="who">
+                  ${Object.values(characters)
+                    .filter(x=>x.id!==state.selectedCharacterId)
+                    .sort((a,b)=>a.name.localeCompare(b.name,'ja'))
+                    .map(x=>`<option value="${x.id}" ${x.id===f.who?'selected':''}>${esc(x.name)}</option>`).join('')}
+                </select></label>
+              <label class="edit-field">
+                <span class="label">気に入っている／気に入らない</span>
+                <select data-feeling-index="${i}" data-feeling-key="kind">
+                  <option value="like" ${f.kind==='like'?'selected':''}>気に入っているところ</option>
+                  <option value="dislike" ${f.kind==='dislike'?'selected':''}>気に入らないところ</option>
+                </select></label>
+              <label class="edit-field full">
+                <span class="label">感情の名前</span>
+                <input data-feeling-index="${i}" data-feeling-key="emotion" value="${esc(f.emotion)}">
+              </label></div>
+            <div class="savebar">
+              <button type="button" class="btn danger remove-feeling" data-feeling-index="${i}">削除</button>
+            </div></div>`).join('')}
+      </div></div>`;
+    host.querySelectorAll('.add-feeling').forEach(b=>b.addEventListener('click',()=>{
+      syncFeelingsFromDOM();
+      state.editDraft.strongFeelings.push({
+        who:Object.keys(characters).find(id=>id!==state.selectedCharacterId)||'Kyoshiro',
+        kind:'like',
+        emotion:''});
+      renderStrongFeelings(state.editDraft);}));
+    host.querySelectorAll('.remove-feeling').forEach(b=>b.addEventListener('click',()=>{
+      syncFeelingsFromDOM();
+      state.editDraft.strongFeelings.splice(Number(b.dataset.feelingIndex),1);
+      renderStrongFeelings(state.editDraft);}));}}
 function syncFeelingsFromDOM(){
   if(!state.editDraft)return;
   $('feelingsSection').querySelectorAll('[data-feeling-index]').forEach(el=>{const i=Number(el.dataset.feelingIndex),key=el.dataset.feelingKey;if(state.editDraft.strongFeelings[i])state.editDraft.strongFeelings[i][key]=el.value;});
@@ -233,7 +280,7 @@ function renderRole(){
   }else{
     if(state.role==='d'){
       $('dv').innerHTML=`<div class="card"><div class="section-title"><h2>探偵を編集</h2></div><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>異常な癖</h3><div class="edit-grid">${r.habits.map((h,i)=>`<label class="edit-field"><span class="label">${i+1}</span><input data-habit-index="${i}" value="${esc(h)}"></label>`).join('')}</div>`;
-    }else{$('av').innerHTML=`<div class="card"><div class="section-title"><h2>助手を編集</h2></div><label class="edit-field"><span class="label">心労</span><input type="number" min="0" data-stress value="${esc(r.stress)}"></label><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>ゲスト</h3><div class="skill-editor">${r.guests.map((g,i)=>`<div class="guest-row"><input data-guest-index="${i}" data-guest-key="name" value="${esc(g.name)}"><input data-guest-index="${i}" data-guest-key="skill" value="${esc(g.skill)}"><button type="button" class="btn remove-guest" data-guest-index="${i}">削除</button></div>`).join('')}<button type="button" class="btn add-guest">＋ゲストを追加</button></div><div class="savebar"><button type="button" class="btn" id="cancelRole">キャンセル</button><button type="button" class="btn save" id="saveRole">保存</button></div></div>`;}
+    }else{$('av').innerHTML=`<div class="card"><div class="section-title"><h2>助手を編集</h2></div><label class="edit-field"><span class="label">心労</span><input type="number" min="0" data-stress value="${esc(r.stress)}"></label><h3>技能</h3>${skillEditor(c)}<h3>アクション</h3><div class="action-editor">${actionEditor(r.actions,level)}</div><h3>ゲスト</h3><div class="skill-editor">${r.guests.map((g,i)=>`<div class="guest-row"><input data-guest-index="${i}" data-guest-key="name" value="${esc(g.name)}"><input data-guest-index="${i}" data-guest-key="skill" value="${esc(g.skill)}"><button type="button" class="btn remove-guest" data-guest-index="${i}">削除</button></div>`).join('')}<button type="button" class="btn add-guest">＋ゲストを追加</button></div>`;}
     attachEditHandlers();}
 }
 function syncDraftFromDOM(root){
